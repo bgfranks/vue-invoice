@@ -1,16 +1,86 @@
 <template>
-  <router-view />
+  <div>
+    <div v-if="!mobile" class="app flex">
+      <Navigation />
+      <div class="app-content flex flex-column">
+        <router-view />
+      </div>
+    </div>
+    <div v-else class="mobile-message flex flex-column">
+      <h2>Sorry, this app not supported on Mobile Devices</h2>
+      <p>To use this app, please use a computer or tablet</p>
+    </div>
+  </div>
 </template>
 
+<script>
+import Navigation from './components/Navigations.vue';
+
+export default {
+  data() {
+    return {
+      mobile: null,
+    };
+  },
+  components: {
+    Navigation,
+  },
+  created() {
+    this.checkScreen();
+    window.addEventListener('resize', this.checkScreen);
+  },
+  methods: {
+    checkScreen() {
+      const windowWitdh = window.innerWidth;
+
+      if (windowWitdh <= 750) {
+        this.mobile = true;
+        return;
+      }
+
+      this.mobile = false;
+    },
+  },
+};
+</script>
+
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
+}
+
+.app {
   background-color: #141625;
+  min-height: 100vh;
+  flex-direction: column;
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+  }
+
+  .app-content {
+    flex: 1;
+    padding: 0 20px;
+    position: relative;
+  }
+}
+
+.mobile-message {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #141625;
+  color: #fff;
+
+  p {
+    margin-top: 16px;
+  }
 }
 
 button,
@@ -74,7 +144,7 @@ button,
 
 .status-button {
   &::before {
-    content: "";
+    content: '';
     width: 10px;
     height: 10px;
     border-radius: 50%;
