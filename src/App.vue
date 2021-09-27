@@ -59,7 +59,7 @@ export default {
 
 .app {
   background-color: #141625;
-  min-height: 100vh;
+  height: 100vh;
   flex-direction: column;
 
   @media (min-width: 900px) {
@@ -67,8 +67,8 @@ export default {
   }
 
   .app-content {
-    flex: 1;
     padding: 0 20px;
+    flex: 1;
     position: relative;
   }
 }
