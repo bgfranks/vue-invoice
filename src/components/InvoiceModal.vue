@@ -159,12 +159,8 @@
             </tr>
           </table>
 
-          <div class="flex button">
-            <img
-              @click="addNewInvoiceItem"
-              src="@/assets/icon-plus.svg"
-              alt="Add Item"
-            />
+          <div @click="addNewInvoiceItem" class="flex button">
+            <img src="@/assets/icon-plus.svg" alt="Add Item" />
             Add New Item
           </div>
         </div>
@@ -185,10 +181,14 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+import { uid } from 'uid';
+
 export default {
   name: 'invoiceModal',
   data() {
     return {
+      dateOptions: { year: 'numeric', month: 'short', day: 'numeric' },
       billerStreetAddress: null,
       billerCity: null,
       billerZipCode: null,
@@ -211,6 +211,46 @@ export default {
       invoiceTotal: 0,
     };
   },
+  created() {
+    // get current date for invoice date field
+    this.invoiceDateUnix = Date.now();
+    this.invoiceDate = new Date(this.invoiceDateUnix).toLocaleDateString(
+      'en-US',
+      this.dateOptions
+    );
+  },
+  methods: {
+    ...mapMutations(['TOGGLE_INVOICE']),
+    closeInvoice() {
+      this.TOGGLE_INVOICE();
+    },
+    addNewInvoiceItem() {
+      this.invoiceItemList.push({
+        id: uid(),
+        itemName: '',
+        qty: '',
+        price: 0,
+        total: 0,
+      });
+    },
+    deleteInvoiceItem(id) {
+      this.invoiceItemList = this.invoiceItemList.filter(
+        (item) => item.id !== id
+      );
+    },
+  },
+  watch: {
+    paymentTerms() {
+      const futureDate = new Date();
+      this.paymentDueDateUnix = futureDate.setDate(
+        futureDate.getDate() + parseInt(this.paymentTerms)
+      );
+      this.paymentDueDate = new Date(this.paymentDueDateUnix).toLocaleString(
+        'en-US',
+        this.dateOptions
+      );
+    },
+  },
 };
 </script>
 
@@ -220,8 +260,11 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 102vh;
+  height: 100vh;
   overflow: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @media (min-width: 900px) {
     left: 90px;
