@@ -159,12 +159,8 @@
             </tr>
           </table>
 
-          <div class="flex button">
-            <img
-              @click="addNewInvoiceItem"
-              src="@/assets/icon-plus.svg"
-              alt="Add Item"
-            />
+          <div @click="addNewInvoiceItem" class="flex button">
+            <img src="@/assets/icon-plus.svg" alt="Add Item" />
             Add New Item
           </div>
         </div>
@@ -186,6 +182,7 @@
 
 <script>
 import { mapMutations } from 'vuex';
+import { uid } from 'uid';
 
 export default {
   name: 'invoiceModal',
@@ -226,6 +223,20 @@ export default {
     ...mapMutations(['TOGGLE_INVOICE']),
     closeInvoice() {
       this.TOGGLE_INVOICE();
+    },
+    addNewInvoiceItem() {
+      this.invoiceItemList.push({
+        id: uid(),
+        itemName: '',
+        qty: '',
+        price: 0,
+        total: 0,
+      });
+    },
+    deleteInvoiceItem(id) {
+      this.invoiceItemList = this.invoiceItemList.filter(
+        (item) => item.id !== id
+      );
     },
   },
   watch: {
