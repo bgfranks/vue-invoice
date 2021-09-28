@@ -11,7 +11,22 @@
 </template>
 
 <script>
-export default {};
+import { mapMutations } from 'vuex';
+
+export default {
+  name: 'modal',
+  methods: {
+    ...mapMutations(['TOGGLE_INVOICE', 'TOGGLE_MODAL']),
+
+    closeModal() {
+      this.TOGGLE_MODAL();
+    },
+    closeInvoice() {
+      this.TOGGLE_MODAL();
+      this.TOGGLE_INVOICE();
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
