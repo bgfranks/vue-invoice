@@ -5,6 +5,7 @@
     class="invoice-wrap flex flex-column"
   >
     <form @submit.prevent="submitForm" class="invoice-content">
+      <Loading v-show="loading" />
       <h1>New Inovice</h1>
 
       <!-- Bill From -->
@@ -123,7 +124,6 @@
         <div class="input flex flex-column">
           <label for="productDescription">Product Description</label>
           <input
-            disabled
             type="text"
             id="productDescription"
             v-model="productDescription"
@@ -169,11 +169,17 @@
       <!-- Save/Exit -->
       <div class="save flex">
         <div class="left">
-          <button @click="closeInvoice" class="red">Cancel</button>
+          <button type="button" @click="closeInvoice" class="red">
+            Cancel
+          </button>
         </div>
         <div class="right flex">
-          <button @click="saveDraft" class="dark-purple">Save Draft</button>
-          <button @click="publishInvoice" class="purple">Create Invoice</button>
+          <button type="submit" @click="saveDraft" class="dark-purple">
+            Save Draft
+          </button>
+          <button type="submit" @click="publishInvoice" class="purple">
+            Create Invoice
+          </button>
         </div>
       </div>
     </form>
@@ -181,14 +187,21 @@
 </template>
 
 <script>
+import { db } from '../firebase/firebaseInit';
+import { collection, addDoc } from 'firebase/firestore';
 import { mapMutations } from 'vuex';
 import { uid } from 'uid';
+import Loading from './Loading.vue';
 
 export default {
   name: 'invoiceModal',
+  components: {
+    Loading,
+  },
   data() {
     return {
       dateOptions: { year: 'numeric', month: 'short', day: 'numeric' },
+      loading: null,
       billerStreetAddress: null,
       billerCity: null,
       billerZipCode: null,
@@ -220,7 +233,12 @@ export default {
     );
   },
   methods: {
-    ...mapMutations(['TOGGLE_INVOICE']),
+    ...mapMutations(['TOGGLE_INVOICE', 'TOGGLE_MODAL']),
+    checkClick(e) {
+      if (e.target === this.$refs.invoiceWrap) {
+        this.TOGGLE_MODAL();
+      }
+    },
     closeInvoice() {
       this.TOGGLE_INVOICE();
     },
@@ -237,6 +255,64 @@ export default {
       this.invoiceItemList = this.invoiceItemList.filter(
         (item) => item.id !== id
       );
+    },
+    calInvoiceTotal() {
+      this.invoiceTotal = 0;
+      this.invoiceItemList.forEach((item) => {
+        this.invoiceTotal += item.total;
+      });
+    },
+    publishInvoice() {
+      this.invoicePending = true;
+    },
+    saveDraft() {
+      this.invoiceDraft = true;
+    },
+    async uploadInvoice() {
+      if (this.invoiceItemList.length <= 0) {
+        alert('Please ensure you filled out work items!');
+        return;
+      }
+
+      this.loading = true;
+
+      this.calInvoiceTotal();
+
+      try {
+        await addDoc(collection(db, 'invoice'), {
+          invoiceId: uid(6),
+          billerStreetAddress: this.billerStreetAddress,
+          billerCity: this.billerCity,
+          billerZipCode: this.billerZipCode,
+          billerCountry: this.billerCountry,
+          clientName: this.clientName,
+          clientEmail: this.clientEmail,
+          clientStreetAddress: this.clientStreetAddress,
+          clientCity: this.clientCity,
+          clientZipCode: this.clientZipCode,
+          clientCountry: this.clientCountry,
+          invoiceDate: this.invoiceDate,
+          invoiceDateUnix: this.invoiceDateUnix,
+          paymentTerms: this.paymentTerms,
+          paymentDueDate: this.paymentDueDate,
+          paymentDueDateUnix: this.paymentDueDateUnix,
+          productDescription: this.productDescription,
+          invoiceItemList: this.invoiceItemList,
+          invoiceTotal: this.invoiceTotal,
+          invoicePending: this.invoicePending,
+          invoiceDraft: this.invoiceDraft,
+          invoicePaid: null,
+        });
+      } catch (error) {
+        console.log('error uploading invoice', error);
+      }
+
+      this.loading = false;
+
+      this.TOGGLE_INVOICE();
+    },
+    submitForm() {
+      this.uploadInvoice();
     },
   },
   watch: {
