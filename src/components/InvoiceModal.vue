@@ -169,11 +169,17 @@
       <!-- Save/Exit -->
       <div class="save flex">
         <div class="left">
-          <button @click="closeInvoice" class="red">Cancel</button>
+          <button type="button" @click="closeInvoice" class="red">
+            Cancel
+          </button>
         </div>
         <div class="right flex">
-          <button @click="saveDraft" class="dark-purple">Save Draft</button>
-          <button @click="publishInvoice" class="purple">Create Invoice</button>
+          <button type="submit" @click="saveDraft" class="dark-purple">
+            Save Draft
+          </button>
+          <button type="submit" @click="publishInvoice" class="purple">
+            Create Invoice
+          </button>
         </div>
       </div>
     </form>
@@ -267,30 +273,34 @@ export default {
 
       this.calInvoiceTotal();
 
-      await addDoc(collection(db, 'invoice'), {
-        invoiceId: uid(6),
-        billerStreetAddress: this.billerStreetAddress,
-        billerCity: this.billerCity,
-        billerZipCode: this.billerZipCode,
-        billerCountry: this.billerCountry,
-        clientName: this.clientName,
-        clientEmail: this.clientEmail,
-        clientStreetAddress: this.clientStreetAddress,
-        clientCity: this.clientCity,
-        clientZipCode: this.clientZipCode,
-        clientCountry: this.clientCountry,
-        invoiceDate: this.invoiceDate,
-        invoiceDateUnix: this.invoiceDateUnix,
-        paymentTerms: this.paymentTerms,
-        paymentDueDate: this.paymentDueDate,
-        paymentDueDateUnix: this.paymentDueDateUnix,
-        productDescription: this.productDescription,
-        invoiceItemList: this.invoiceItemList,
-        invoiceTotal: this.invoiceTotal,
-        invoicePending: this.invoicePending,
-        invoiceDraft: this.invoiceDraft,
-        invoicePaid: null,
-      });
+      try {
+        await addDoc(collection(db, 'invoice'), {
+          invoiceId: uid(6),
+          billerStreetAddress: this.billerStreetAddress,
+          billerCity: this.billerCity,
+          billerZipCode: this.billerZipCode,
+          billerCountry: this.billerCountry,
+          clientName: this.clientName,
+          clientEmail: this.clientEmail,
+          clientStreetAddress: this.clientStreetAddress,
+          clientCity: this.clientCity,
+          clientZipCode: this.clientZipCode,
+          clientCountry: this.clientCountry,
+          invoiceDate: this.invoiceDate,
+          invoiceDateUnix: this.invoiceDateUnix,
+          paymentTerms: this.paymentTerms,
+          paymentDueDate: this.paymentDueDate,
+          paymentDueDateUnix: this.paymentDueDateUnix,
+          productDescription: this.productDescription,
+          invoiceItemList: this.invoiceItemList,
+          invoiceTotal: this.invoiceTotal,
+          invoicePending: this.invoicePending,
+          invoiceDraft: this.invoiceDraft,
+          invoicePaid: null,
+        });
+      } catch (error) {
+        console.log('error uploading invoice', error);
+      }
 
       this.loading = false;
 
