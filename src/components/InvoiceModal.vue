@@ -5,6 +5,7 @@
     class="invoice-wrap flex flex-column"
   >
     <form @submit.prevent="submitForm" class="invoice-content">
+      <Loading v-show="loading" />
       <h1>New Inovice</h1>
 
       <!-- Bill From -->
@@ -184,12 +185,17 @@ import { db } from '../firebase/firebaseInit';
 import { collection, addDoc } from 'firebase/firestore';
 import { mapMutations } from 'vuex';
 import { uid } from 'uid';
+import Loading from './Loading.vue';
 
 export default {
   name: 'invoiceModal',
+  components: {
+    Loading,
+  },
   data() {
     return {
       dateOptions: { year: 'numeric', month: 'short', day: 'numeric' },
+      loading: null,
       billerStreetAddress: null,
       billerCity: null,
       billerZipCode: null,
@@ -257,6 +263,8 @@ export default {
         return;
       }
 
+      this.loading = true;
+
       this.calInvoiceTotal();
 
       await addDoc(collection(db, 'invoice'), {
@@ -283,6 +291,8 @@ export default {
         invoiceDraft: this.invoiceDraft,
         invoicePaid: null,
       });
+
+      this.loading = false;
 
       this.TOGGLE_INVOICE();
     },

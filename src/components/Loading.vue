@@ -34,6 +34,7 @@ export default {
     height: 60px;
     margin: 0 auto;
     border: 3px solid transparent;
+    border-radius: 50%;
     border-top-color: #fff;
     border-bottom-color: #fff;
     animation: spin ease 1000ms infinite;
