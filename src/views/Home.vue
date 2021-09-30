@@ -76,6 +76,7 @@ export default {
 <style lang="scss" scoped>
 .home {
   color: #fff;
+  height: 100vh;
 
   .header {
     margin-bottom: 65px;

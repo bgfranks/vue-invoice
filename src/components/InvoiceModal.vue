@@ -6,7 +6,8 @@
   >
     <form @submit.prevent="submitForm" class="invoice-content">
       <Loading v-show="loading" />
-      <h1>New Inovice</h1>
+      <h1 v-if="!editInvoice">New Inovice</h1>
+      <h1 v-else>Edit Invoice</h1>
 
       <!-- Bill From -->
       <div class="bill-from flex flex-column">
@@ -174,11 +175,37 @@
           </button>
         </div>
         <div class="right flex">
-          <button type="submit" @click="saveDraft" class="dark-purple">
+          <button
+            v-if="!editInvoice"
+            type="submit"
+            @click="saveDraft"
+            class="dark-purple"
+          >
             Save Draft
           </button>
-          <button type="submit" @click="publishInvoice" class="purple">
+          <button
+            v-if="editInvoice"
+            type="submit"
+            @click="saveDraft"
+            class="dark-purple"
+          >
+            Update Draft
+          </button>
+          <button
+            v-if="!editInvoice"
+            type="submit"
+            @click="publishInvoice"
+            class="purple"
+          >
             Create Invoice
+          </button>
+          <button
+            v-if="editInvoice"
+            type="submit"
+            @click="publishInvoice"
+            class="purple"
+          >
+            Update Invoice
           </button>
         </div>
       </div>
@@ -189,7 +216,7 @@
 <script>
 import { db } from '../firebase/firebaseInit';
 import { collection, addDoc } from 'firebase/firestore';
-import { mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import { uid } from 'uid';
 import Loading from './Loading.vue';
 
@@ -233,7 +260,7 @@ export default {
     );
   },
   methods: {
-    ...mapMutations(['TOGGLE_INVOICE', 'TOGGLE_MODAL']),
+    ...mapMutations(['TOGGLE_INVOICE', 'TOGGLE_MODAL', 'TOGGLE_EDIT_INVOICE']),
     checkClick(e) {
       if (e.target === this.$refs.invoiceWrap) {
         this.TOGGLE_MODAL();
@@ -241,6 +268,10 @@ export default {
     },
     closeInvoice() {
       this.TOGGLE_INVOICE();
+
+      if (this.editInvoice) {
+        this.TOGGLE_EDIT_INVOICE();
+      }
     },
     addNewInvoiceItem() {
       this.invoiceItemList.push({
@@ -314,6 +345,9 @@ export default {
     submitForm() {
       this.uploadInvoice();
     },
+  },
+  computed: {
+    ...mapState(['editInvoice']),
   },
   watch: {
     paymentTerms() {

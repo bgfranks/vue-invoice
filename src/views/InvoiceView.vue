@@ -21,10 +21,7 @@
         </div>
       </div>
       <div class="right flex">
-        <button
-          @click="toggleEditInvoice(currentInvoice.docId)"
-          class="dark-purple"
-        >
+        <button @click="toggleEditInvoice" class="dark-purple">
           Edit
         </button>
         <button @click="deleteInvoice(currentInvoice.docId)" class="red">
@@ -123,11 +120,20 @@ export default {
     this.getCurrentInvoice();
   },
   methods: {
-    ...mapMutations(['SET_CURRENT_INVOICE']),
+    ...mapMutations([
+      'SET_CURRENT_INVOICE',
+      'TOGGLE_EDIT_INVOICE',
+      'TOGGLE_INVOICE',
+    ]),
 
     getCurrentInvoice() {
       this.SET_CURRENT_INVOICE(this.$route.params.invoiceId);
       this.currentInvoice = this.currentInvoiceArray[0];
+    },
+    toggleEditInvoice() {
+      console.log('click');
+      this.TOGGLE_EDIT_INVOICE();
+      this.TOGGLE_INVOICE();
     },
   },
   computed: {
@@ -138,6 +144,7 @@ export default {
 
 <style lang="scss" scoped>
 .invoice-view {
+  height: 100vh;
   .nav-link {
     margin-bottom: 32px;
     align-items: center;
