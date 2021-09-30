@@ -184,14 +184,6 @@
             Save Draft
           </button>
           <button
-            v-if="editInvoice"
-            type="submit"
-            @click="saveDraft"
-            class="dark-purple"
-          >
-            Update Draft
-          </button>
-          <button
             v-if="!editInvoice"
             type="submit"
             @click="publishInvoice"
