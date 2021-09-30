@@ -9,10 +9,14 @@ export default createStore({
     invoiceData: [],
     invoicesLoaded: null,
     currentInvoiceArray: null,
+    editInvoice: null,
   },
   mutations: {
     TOGGLE_INVOICE(state) {
       state.invoiceModal = !state.invoiceModal;
+    },
+    TOGGLE_EDIT_INVOICE(state) {
+      state.editInvoice = !state.editInvoice;
     },
     TOGGLE_MODAL(state) {
       state.modalActive = !state.modalActive;
