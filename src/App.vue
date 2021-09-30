@@ -71,7 +71,7 @@ export default {
 
 .app {
   background-color: #141625;
-  height: 100vh;
+  height: 100%;
   flex-direction: column;
 
   @media (min-width: 900px) {
