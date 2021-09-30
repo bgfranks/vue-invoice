@@ -1,5 +1,11 @@
 import { createStore } from 'vuex';
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { db } from '../firebase/firebaseInit';
 
 export default createStore({
@@ -36,6 +42,23 @@ export default createStore({
       state.invoiceData = state.invoiceData.filter(
         (invoice) => invoice.docId !== payload
       );
+    },
+    UPDATE_STATUS_PAID(state, payload) {
+      state.invoiceData.forEach((invoice) => {
+        if (invoice.docId === payload) {
+          invoice.invoicePaid = true;
+          invoice.invoicePending = false;
+        }
+      });
+    },
+    UPDATE_STATUS_PENDING(state, payload) {
+      state.invoiceData.forEach((invoice) => {
+        if (invoice.docId === payload) {
+          invoice.invoicePaid = false;
+          invoice.invoicePending = true;
+          invoice.invoiceDraft = false;
+        }
+      });
     },
   },
   actions: {
@@ -87,6 +110,27 @@ export default createStore({
       await deleteDoc(getInvoice);
 
       commit('DELETE_INVOICE', docId);
+    },
+    async UPDATE_STATUS_PAID({ commit }, docId) {
+      const getInvoice = doc(db, 'invoice', docId);
+
+      await updateDoc(getInvoice, {
+        invoicePaid: true,
+        invoicePending: false,
+      });
+
+      commit('UPDATE_STATUS_PAID', docId);
+    },
+    async UPDATE_STATUS_PENDING({ commit }, docId) {
+      const getInvoice = doc(db, 'invoice', docId);
+
+      await updateDoc(getInvoice, {
+        invoicePaid: false,
+        invoicePending: true,
+        invoiceDraft: false,
+      });
+
+      commit('UPDATE_STATUS_PENDING', docId);
     },
   },
   modules: {},
